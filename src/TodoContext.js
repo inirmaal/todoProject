@@ -1,6 +1,6 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {addTodo} from './actions/todo';
+import {addTodo, fetchTodo} from './actions/todo';
 
 
 export const TodoContext = createContext();
@@ -12,8 +12,9 @@ const TodoContextProvider = (props) => {
     const [filteredTodos, setFilteredTodos] = useState([]);
     const [position, setPosition] = useState();
     const [actionPosition, setActionPosition] = useState();
-    const todoReducer = useSelector(state => state.todo.todos);
-    console.log(todoReducer);
+    const fetchedTodos = useSelector(state => state.todo.fetchedTodos);
+    console.log(JSON.stringify(fetchedTodos));
+    // console.log(todoReducer);
     const dispatch = useDispatch();
 
     //get from localstorage
@@ -25,16 +26,29 @@ const TodoContextProvider = (props) => {
         }
     }, [])
 
-    useEffect(() => {
-        if (todoReducer !== filteredTodos) {
-            setFilteredTodos(todoReducer)
+    const fetchTodos = useCallback(async () => {
+        try {
+            let fetchTodoAction = await fetchTodo();
+            dispatch(fetchTodoAction);
+        } catch (err) {
+            console.log(err);
         }
-    }, [todoReducer])
+    },[dispatch]);
+
+    useEffect(() => {
+        fetchTodos()
+    },[fetchTodos]);
+
+    useEffect(() => {
+        if (todos !== filteredTodos) {
+            setFilteredTodos(todos)
+        }
+    }, [todos])
 
     // to localStorage
-    useEffect(() => {
-        localStorage.setItem('todos', JSON.stringify(todos))
-    }, [todos])
+    // useEffect(() => {
+    //     localStorage.setItem('todos', JSON.stringify(todos))
+    // }, [todos])
 
     const doneHandler = (todoId, e) => {
         const index = todos.findIndex(item => item.id === todoId)
@@ -58,7 +72,7 @@ const TodoContextProvider = (props) => {
             setFilteredTodos(todoSearch);
         } else {
             // setTodos([{ id: Date.now(), title: todo, done: false }, ...todos]);  
-            dispatch(addTodo(todo, false));
+            dispatch(addTodo(todo, false, todos));
             setTodo('');
         }
     }
@@ -69,7 +83,7 @@ const TodoContextProvider = (props) => {
         if (position === index) {
             setPosition(null);
         } else {
-            setPosition(index)
+            setPosition(index) 
         }
         switch (viewHandler) {
             case 'All':

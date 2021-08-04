@@ -1,11 +1,9 @@
-import React, { useContext } from 'react';
-import { TodoContext } from '../TodoContext';
+import React from 'react';
 import './Footer.css';
 
 
-const Footer = () => {
-    const { filteredTodos, addSearchHandler, showHandler, bgColorChange, actionBgColorChange } = useContext(TodoContext);
-    const length = filteredTodos.length;
+const Footer = ({fetchedTodos, addSearchHandler, showHandler, bgColorChange, actionBgColorChange}) => {
+    const length = fetchedTodos.length;
     return (
         <div className="contain">
             <span onClick={() => addSearchHandler(0)} className="button" style={{ background: actionBgColorChange(0) }}><i className="fas fa-plus"></i></span>

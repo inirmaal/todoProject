@@ -1,14 +1,12 @@
-import React, { useContext } from 'react';
-import { TodoContext } from '../TodoContext';
+import React from 'react';
 
-const Form = () => {
-    const { todo, setTodo, submitHandler } = useContext(TodoContext);
+const Form = ({todo, setTodo, submitHandler }) => {
     return (
         <div>
             <form onSubmit={ submitHandler }>
                 <div>
                     <div className="border">
-                        <input type="text" required className="form-control-plaintext" value={todo}
+                        <input type="text" required className="form-control-plaintext" value = {todo} 
                             onChange={(e) => setTodo(e.target.value)} />
                     </div>
                 </div>
